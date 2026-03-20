@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Yasam Waifu Premium Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body { margin:0; font-family: 'Inter', sans-serif; background: radial-gradient(circle at 20% 20%, #ff79c6 0%, #1a1a2e 50%, #8be9fd 100%); color:#fff; min-height:100vh; overflow-x:hidden; position:relative;}
+header { text-align:center; padding:2rem 1rem; font-size:2.5rem; font-weight:800; background: linear-gradient(90deg,#ff79c6,#bd93f9); color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5); border-bottom-left-radius:25px; border-bottom-right-radius:25px; letter-spacing:1px;}
+.container { max-width:1400px; margin:2rem auto; padding:0 1.5rem; }
+select { width:100%; padding:1rem 1.5rem; font-size:1rem; border-radius:16px; border:none; background: rgba(255,255,255,0.1); color:#fff; backdrop-filter:blur(15px); margin-bottom:2rem; cursor:pointer; transition:0.3s all; }
+select:focus { outline:none; box-shadow:0 0 0 4px rgba(189,147,249,0.5); }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.5rem; }
+.card { background: rgba(255,255,255,0.05); border-radius:20px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.5); transition:0.4s all; cursor:pointer; position:relative;}
+.card:hover { transform:translateY(-12px) scale(1.03); box-shadow:0 30px 60px rgba(0,0,0,0.6);}
+img, video { width:100%; height:220px; object-fit:cover; transition:transform 0.4s; display:block;}
+.card:hover img, .card:hover video { transform:scale(1.08);}
+.play-overlay { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:60px; height:60px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; transition:0.3s;}
+.card:hover .play-overlay { opacity:1; }
+.play-overlay i { font-size:1.5rem; color:white; }
+.card-content { padding:1rem; text-align:center; }
+.download-btn { padding:0.7rem 1.8rem; background:linear-gradient(135deg,#ff79c6,#bd93f9); color:white; font-weight:600; border:none; border-radius:50px; cursor:pointer; transition:0.3s all; }
+.download-btn:hover { transform:translateY(-3px); box-shadow:0 10px 25px rgba(189,147,249,0.5);}
+.fullscreen { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; z-index:9999; visibility:hidden; opacity:0; transition:opacity 0.4s;}
+.fullscreen.active { visibility:visible; opacity:1; }
+.fullscreen img, .fullscreen video { width:100%; height:100%; object-fit:contain; border-radius:0; box-shadow:none; }
+.skeleton { background: linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%); background-size:200% 100%; animation: loading 1.5s infinite; border-radius:16px; height:220px;}
+@keyframes loading { 0% { background-position:200% 0;} 100% {background-position:-200% 0;}}
+@media(max-width:768px){ .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));} img,video{height:180px;} }
+@media(max-width:480px){ .grid{grid-template-columns:1fr;} img,video{height:220px;} }
+</style>
+</head>
+<body>
+<header>✨ Yasam Waifu Premium Gallery</header>
+<div class="container">
+  <select id="folderSelect"><option>Loading folders...</option></select>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="fullscreen" id="fullscreen">
+  <img id="fsImg" style="display:none">
+  <video id="fsVideo" style="display:none" controls></video>
+</div>
+
+<script>
+const USER="Yasamsen",REPO="media-repo",BRANCH="main";
+const baseAPI=`https://api.github.com/repos/${USER}/${REPO}/contents/`;
+const rawBase=`https://raw.githubusercontent.com/${USER}/${REPO}/${BRANCH}/`;
+
+const folderSelect=document.getElementById("folderSelect");
+const grid=document.getElementById("grid");
+const fullscreen=document.getElementById("fullscreen");
+const fsImg=document.getElementById("fsImg");
+const fsVideo=document.getElementById("fsVideo");
+
+// ================= LOAD FOLDERS =================
+async function loadFolders(){
+  try{
+    const res=await fetch(baseAPI);
+    const data=await res.json();
+    const folders=data.filter(f=>f.type==="dir");
+    folderSelect.innerHTML="<option value=''>Select folder...</option>";
+    folders.forEach(f=>{
+      const opt=document.createElement("option");
+      opt.value=f.name; opt.textContent=f.name;
+      folderSelect.appendChild(opt);
+    });
+    if(folders.length>0) loadFiles(folders[0].name);
+  }catch(e){ folderSelect.innerHTML="<option>Error loading folders</option>"; }
+}
+
+// ================= SKELETON LOADING =================
+function showSkeleton(count=6){
+  grid.innerHTML="";
+  for(let i=0;i<count;i++){
+    const skel=document.createElement("div");
+    skel.className="skeleton";
+    grid.appendChild(skel);
+  }
+}
+
+// ================= LOAD FILES BATCH =================
+async function loadFiles(folder){
+  showSkeleton(8);
+  try{
+    const res=await fetch(rawBase+folder+"/api.json");
+    const json=await res.json();
+    grid.innerHTML="";
+    const batchSize=12;
+    for(let i=0;i<json.data.length;i+=batchSize){
+      const batch=json.data.slice(i,i+batchSize);
+      batch.forEach(link=>{
+        const ext=link.split('.').pop().toLowerCase();
+        const isImage=ext.match(/(jpg|jpeg|png|webp|gif)/);
+        const card=document.createElement("div"); card.className="card";
+
+        const media=isImage?document.createElement("img"):document.createElement("video");
+        media.src=link;
+        if(!isImage){ media.controls=true; media.preload="metadata"; const overlay=document.createElement("div"); overlay.className="play-overlay"; overlay.innerHTML='<i class="fas fa-play"></i>'; card.appendChild(overlay);}
+        
+        media.addEventListener("click",()=>{
+          if(isImage){ fsImg.src=link; fsImg.style.display="block"; fsVideo.style.display="none"; }
+          else{ fsVideo.src=link; fsVideo.style.display="block"; fsImg.style.display="none"; }
+          fullscreen.classList.add("active");
+          document.body.style.overflow="hidden";
+        });
+
+        const cardContent=document.createElement("div"); cardContent.className="card-content";
+        const btn=document.createElement("button"); btn.className="download-btn"; btn.innerHTML='<i class="fas fa-download"></i> Download';
+        btn.onclick=async(e)=>{
+          e.stopPropagation();
+          try{ const resp=await fetch(link); const blob=await resp.blob(); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=link.split("/").pop(); document.body.appendChild(a); a.click(); a.remove(); }
+          catch(err){ alert("Failed to download"); }
+        }
+        cardContent.appendChild(btn);
+        card.appendChild(media);
+        card.appendChild(cardContent);
+        grid.appendChild(card);
+      });
+      // small delay per batch
+      await new Promise(r=>setTimeout(r,50));
+    }
+  }catch(e){ grid.innerHTML="<p style='text-align:center;color:#ff6b81;'>Failed to load folder.</p>"; }
+}
+
+// ================= EVENT LISTENERS =================
+folderSelect.addEventListener("change",(e)=>{loadFiles(e.target.value);});
+fullscreen.addEventListener("click",()=>{
+  fullscreen.classList.remove("active");
+  fsImg.src=""; fsVideo.src="";
+  document.body.style.overflow="";
+});
+
+loadFolders();
+</script>
+</body>
+</html>
