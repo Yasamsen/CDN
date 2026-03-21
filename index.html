@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YASAM | Premium Media Gallery</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #c084fc; /* Purple soft */
+            --accent: #ff79c6; /* Pink accent */
+            --bg-dark: #0f172a; /* Slate 900 */
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(192, 132, 252, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 121, 198, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* --- Header Section --- */
+        header {
+            padding: 4rem 1rem 3rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo-area {
+            display: inline-block;
+            position: relative;
+        }
+
+        .logo-area h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 30%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-area span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 500;
+        }
+
+        /* --- Control Section --- */
+        .controls {
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            padding: 0 1.5rem;
+        }
+
+        .select-wrapper {
+            position: relative;
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 5px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .select-wrapper:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.2);
+        }
+
+        select {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+        }
+
+        .select-wrapper::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            pointer-events: none;
+        }
+
+        /* --- Grid & Cards --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem 5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            group: hover;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(192, 132, 252, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .media-container {
+            position: relative;
+            height: 250px;
+            overflow: hidden;
+            cursor: zoom-in;
+        }
+
+        .card img, .card video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .card:hover img, .card:hover video {
+            transform: scale(1.1);
+        }
+
+        .play-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.9), transparent);
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-download {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.8rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-download:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+            box-shadow: 0 10px 20px rgba(192, 132, 252, 0.3);
+        }
+
+        /* --- Fullscreen Lightbox --- */
+        .fullscreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.4s;
+        }
+
+        .fullscreen.active { opacity: 1; visibility: visible; }
+
+        .fullscreen-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .close-fs {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .close-fs:hover { opacity: 1; transform: rotate(90deg); }
+
+        /* --- Skeleton Loading --- */
+        .skeleton {
+            background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite linear;
+            height: 350px;
+            border-radius: 24px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 768px) {
+            .logo-area h1 { font-size: 2.2rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-area">
+        <h1>YASAM</h1>
+        <span>Premium Collection</span>
+    </div>
+</header>
+
+<div class="controls">
+    <div class="select-wrapper">
+        <select id="folderSelect">
+            <option value="">Menginisialisasi Arsip...</option>
+        </select>
+    </div>
+</div>
+
+<main class="container">
+    <div class="grid" id="grid"></div>
+</main>
+
+<div class="fullscreen" id="fullscreen">
+    <i class="fas fa-times close-fs"></i>
+    <img id="fsImg" class="fullscreen-content" style="display:none">
+    <video id="fsVideo" class="fullscreen-content" style="display:none" controls></video>
+</div>
+
+<script>
+    const USER="Yasamsen", REPO="media-repo", BRANCH="main";
+    const baseAPI=`https://api.github.com/repos/${USER}/${REPO}/contents/`;
+    const rawBase=`https://raw.githubusercontent.com/${USER}/${REPO}/${BRANCH}/`;
+
+    const folderSelect = document.getElementById("folderSelect");
+    const grid = document.getElementById("grid");
+    const fullscreen = document.getElementById("fullscreen");
+    const fsImg = document.getElementById("fsImg");
+    const fsVideo = document.getElementById("fsVideo");
+
+    async function loadFolders() {
+        try {
+            const res = await fetch(baseAPI);
+            const data = await res.json();
+            const folders = data.filter(f => f.type === "dir");
+            
+            folderSelect.innerHTML = "";
+            folders.forEach((f, index) => {
+                const opt = document.createElement("option");
+                opt.value = f.name;
+                opt.textContent = `📁 ${f.name.toUpperCase()}`;
+                folderSelect.appendChild(opt);
+            });
+            
+            if (folders.length > 0) loadFiles(folders[0].name);
+        } catch (e) {
+            folderSelect.innerHTML = "<option>Gagal memuat folder</option>";
+        }
+    }
+
+    function showSkeleton() {
+        grid.innerHTML = Array(6).fill('<div class="skeleton"></div>').join('');
+    }
+
+    async function loadFiles(folder) {
+        showSkeleton();
+        try {
+            const res = await fetch(rawBase + folder + "/api.json");
+            const json = await res.json();
+            grid.innerHTML = "";
+
+            json.data.forEach(link => {
+                const ext = link.split('.').pop().toLowerCase();
+                const isImage = ext.match(/(jpg|jpeg|png|webp|gif)/);
+                
+                const card = document.createElement("div");
+                card.className = "card";
+
+                const mediaContainer = document.createElement("div");
+                mediaContainer.className = "media-container";
+                
+                const media = isImage ? document.createElement("img") : document.createElement("video");
+                media.src = link;
+                media.loading = "lazy";
+
+                if (!isImage) {
+                    media.muted = true;
+                    mediaContainer.innerHTML += '<div class="play-indicator"><i class="fas fa-play"></i></div>';
+                }
+
+                mediaContainer.onclick = () => {
+                    if (isImage) {
+                        fsImg.src = link; fsImg.style.display = "block";
+                        fsVideo.style.display = "none";
+                    } else {
+                        fsVideo.src = link; fsVideo.style.display = "block";
+                        fsImg.style.display = "none";
+                    }
+                    fullscreen.classList.add("active");
+                    document.body.style.overflow = "hidden";
+                };
+
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+                
+                const btn = document.createElement("button");
+                btn.className = "btn-download";
+                btn.innerHTML = '<i cl
