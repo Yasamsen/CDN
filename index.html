@@ -3,134 +3,342 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>✨ Yasam Waifu Premium Gallery</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Yasam Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-body { margin:0; font-family: 'Inter', sans-serif; background: radial-gradient(circle at 20% 20%, #ff79c6 0%, #1a1a2e 50%, #8be9fd 100%); color:#fff; min-height:100vh; overflow-x:hidden; position:relative;}
-header { text-align:center; padding:2rem 1rem; font-size:2.5rem; font-weight:800; background: linear-gradient(90deg,#ff79c6,#bd93f9); color:white; box-shadow:0 15px 35px rgba(0,0,0,0.5); border-bottom-left-radius:25px; border-bottom-right-radius:25px; letter-spacing:1px;}
-.container { max-width:1400px; margin:2rem auto; padding:0 1.5rem; }
-select { width:100%; padding:1rem 1.5rem; font-size:1rem; border-radius:16px; border:none; background: rgba(255,255,255,0.1); color:#fff; backdrop-filter:blur(15px); margin-bottom:2rem; cursor:pointer; transition:0.3s all; }
-select:focus { outline:none; box-shadow:0 0 0 4px rgba(189,147,249,0.5); }
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.5rem; }
-.card { background: rgba(255,255,255,0.05); border-radius:20px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.5); transition:0.4s all; cursor:pointer; position:relative;}
-.card:hover { transform:translateY(-12px) scale(1.03); box-shadow:0 30px 60px rgba(0,0,0,0.6);}
-img, video { width:100%; height:220px; object-fit:cover; transition:transform 0.4s; display:block;}
-.card:hover img, .card:hover video { transform:scale(1.08);}
-.play-overlay { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:60px; height:60px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; transition:0.3s;}
-.card:hover .play-overlay { opacity:1; }
-.play-overlay i { font-size:1.5rem; color:white; }
-.card-content { padding:1rem; text-align:center; }
-.download-btn { padding:0.7rem 1.8rem; background:linear-gradient(135deg,#ff79c6,#bd93f9); color:white; font-weight:600; border:none; border-radius:50px; cursor:pointer; transition:0.3s all; }
-.download-btn:hover { transform:translateY(-3px); box-shadow:0 10px 25px rgba(189,147,249,0.5);}
-.fullscreen { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:flex; align-items:center; justify-content:center; z-index:9999; visibility:hidden; opacity:0; transition:opacity 0.4s;}
-.fullscreen.active { visibility:visible; opacity:1; }
-.fullscreen img, .fullscreen video { width:100%; height:100%; object-fit:contain; border-radius:0; box-shadow:none; }
-.skeleton { background: linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%); background-size:200% 100%; animation: loading 1.5s infinite; border-radius:16px; height:220px;}
-@keyframes loading { 0% { background-position:200% 0;} 100% {background-position:-200% 0;}}
-@media(max-width:768px){ .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));} img,video{height:180px;} }
-@media(max-width:480px){ .grid{grid-template-columns:1fr;} img,video{height:220px;} }
+  :root{
+    --bg:#0b0c10;
+    --surface:#15171d;
+    --surface-2:#1b1e26;
+    --line: rgba(255,255,255,0.08);
+    --text:#ecebe8;
+    --muted:#8c8f98;
+    --accent:#e7a2b0;
+    --accent-2:#6f8fae;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    min-height:100vh;
+  }
+  /* -------- Sidebar -------- */
+  aside{
+    width:260px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-right:1px solid var(--line);
+    padding:1.75rem 1.25rem;
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+  }
+  .brand{
+    font-family:'Fraunces',serif;
+    font-size:1.5rem;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0 0 0.25rem;
+  }
+  .brand span{ color:var(--accent); }
+  .brand-sub{
+    color:var(--muted);
+    font-size:0.8rem;
+    margin:0 0 1.75rem;
+  }
+  .folder-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.25rem; }
+  .folder-item{
+    display:flex; align-items:center; gap:0.65rem;
+    padding:0.65rem 0.8rem;
+    border-radius:10px;
+    color:var(--muted);
+    font-size:0.92rem;
+    cursor:pointer;
+    border:1px solid transparent;
+    transition:background 0.2s, color 0.2s;
+  }
+  .folder-item i{ font-size:0.8rem; width:16px; text-align:center; opacity:0.7;}
+  .folder-item:hover{ background:var(--surface-2); color:var(--text); }
+  .folder-item.active{
+    background:rgba(231,162,176,0.12);
+    color:var(--text);
+    border-color:rgba(231,162,176,0.35);
+  }
+  .folder-item.active i{ color:var(--accent); opacity:1; }
+
+  /* -------- Main -------- */
+  main{ flex:1; min-width:0; padding:2rem 2.25rem 3rem; }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:baseline;
+    margin-bottom:1.5rem; flex-wrap:wrap; gap:0.5rem;
+  }
+  .topbar h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:1.6rem;
+    margin:0;
+    text-transform:capitalize;
+  }
+  .count{ color:var(--muted); font-size:0.85rem; }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:1.1rem;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    cursor:pointer;
+    position:relative;
+    transition:transform 0.25s ease, border-color 0.25s ease;
+  }
+  .card:hover{ transform:translateY(-4px); border-color:rgba(231,162,176,0.4); }
+  .thumb-wrap{ position:relative; width:100%; aspect-ratio:4/5; background:var(--surface-2); overflow:hidden;}
+  .thumb-wrap img, .thumb-wrap video{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform 0.4s ease;
+  }
+  .card:hover .thumb-wrap img, .card:hover .thumb-wrap video{ transform:scale(1.06); }
+  .play-badge{
+    position:absolute; bottom:0.6rem; right:0.6rem;
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(11,12,16,0.7); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:0.8rem;
+  }
+  .dl-btn{
+    position:absolute; top:0.6rem; right:0.6rem;
+    width:32px; height:32px; border-radius:50%;
+    background:rgba(11,12,16,0.55); border:none; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; opacity:0; transition:opacity 0.2s, background 0.2s;
+    font-size:0.75rem;
+  }
+  .card:hover .dl-btn{ opacity:1; }
+  .dl-btn:hover{ background:var(--accent); color:#20141a; }
+
+  .skeleton{
+    aspect-ratio:4/5; border-radius:14px;
+    background:linear-gradient(100deg,var(--surface) 30%,var(--surface-2) 50%,var(--surface) 70%);
+    background-size:200% 100%;
+    animation:shimmer 1.4s infinite;
+  }
+  @keyframes shimmer{ 0%{background-position:200% 0;} 100%{background-position:-200% 0;} }
+
+  .empty, .error{
+    color:var(--muted); text-align:center; padding:4rem 1rem; font-size:0.95rem;
+  }
+  .error{ color:#e78b8b; }
+
+  /* -------- Lightbox -------- */
+  .lightbox{
+    position:fixed; inset:0; background:rgba(6,6,8,0.96);
+    display:flex; align-items:center; justify-content:center;
+    z-index:999; opacity:0; visibility:hidden; transition:opacity 0.25s;
+  }
+  .lightbox.active{ opacity:1; visibility:visible; }
+  .lightbox img, .lightbox video{ max-width:88vw; max-height:88vh; border-radius:8px; }
+  .lb-close, .lb-nav{
+    position:absolute; background:rgba(255,255,255,0.06); border:1px solid var(--line);
+    color:#fff; border-radius:50%; width:44px; height:44px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    font-size:1rem; transition:background 0.2s;
+  }
+  .lb-close:hover, .lb-nav:hover{ background:rgba(255,255,255,0.16); }
+  .lb-close{ top:1.5rem; right:1.5rem; }
+  .lb-nav.prev{ left:1.5rem; top:50%; transform:translateY(-50%); }
+  .lb-nav.next{ right:1.5rem; top:50%; transform:translateY(-50%); }
+
+  /* -------- Mobile -------- */
+  @media (max-width:820px){
+    body{ flex-direction:column; }
+    aside{
+      width:100%; height:auto; position:relative; border-right:none;
+      border-bottom:1px solid var(--line); padding:1.25rem 1rem;
+    }
+    .folder-list{ flex-direction:row; overflow-x:auto; gap:0.5rem; padding-bottom:0.25rem; }
+    .folder-item{ flex-shrink:0; }
+    main{ padding:1.5rem 1.25rem 2.5rem; }
+    .lb-nav{ width:38px; height:38px; }
+  }
 </style>
 </head>
 <body>
-<header>✨ Yasam Waifu Premium Gallery</header>
-<div class="container">
-  <select id="folderSelect"><option>Loading folders...</option></select>
-  <div class="grid" id="grid"></div>
-</div>
 
-<div class="fullscreen" id="fullscreen">
-  <img id="fsImg" style="display:none">
-  <video id="fsVideo" style="display:none" controls></video>
+<aside>
+  <p class="brand">Yasam <span>Gallery</span></p>
+  <p class="brand-sub">Koleksi media pribadi</p>
+  <ul class="folder-list" id="folderList">
+    <li class="folder-item"><i class="fa-solid fa-spinner fa-spin"></i> Memuat folder…</li>
+  </ul>
+</aside>
+
+<main>
+  <div class="topbar">
+    <h1 id="folderTitle">Gallery</h1>
+    <span class="count" id="itemCount"></span>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="lightbox" id="lightbox">
+  <div class="lb-nav prev" id="lbPrev"><i class="fa-solid fa-chevron-left"></i></div>
+  <img id="lbImg" style="display:none">
+  <video id="lbVideo" style="display:none" controls></video>
+  <div class="lb-nav next" id="lbNext"><i class="fa-solid fa-chevron-right"></i></div>
+  <div class="lb-close" id="lbClose"><i class="fa-solid fa-xmark"></i></div>
 </div>
 
 <script>
-const USER="Yasamsen",REPO="media-repo",BRANCH="main";
-const baseAPI=`https://api.github.com/repos/${USER}/${REPO}/contents/`;
-const rawBase=`https://raw.githubusercontent.com/${USER}/${REPO}/${BRANCH}/`;
+const USER = "Yasamsen", REPO = "media-repo", BRANCH = "main";
+const apiBase = `https://api.github.com/repos/${USER}/${REPO}/contents/`;
+const rawBase = `https://raw.githubusercontent.com/${USER}/${REPO}/${BRANCH}/`;
 
-const folderSelect=document.getElementById("folderSelect");
-const grid=document.getElementById("grid");
-const fullscreen=document.getElementById("fullscreen");
-const fsImg=document.getElementById("fsImg");
-const fsVideo=document.getElementById("fsVideo");
+const folderList = document.getElementById("folderList");
+const grid = document.getElementById("grid");
+const folderTitle = document.getElementById("folderTitle");
+const itemCount = document.getElementById("itemCount");
+const lightbox = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+const lbVideo = document.getElementById("lbVideo");
 
-// ================= LOAD FOLDERS =================
+let currentLinks = [];
+let currentIndex = 0;
+
+function isImageFile(link){ return /\.(jpe?g|png|webp|gif)$/i.test(link); }
+
 async function loadFolders(){
   try{
-    const res=await fetch(baseAPI);
-    const data=await res.json();
-    const folders=data.filter(f=>f.type==="dir");
-    folderSelect.innerHTML="<option value=''>Select folder...</option>";
-    folders.forEach(f=>{
-      const opt=document.createElement("option");
-      opt.value=f.name; opt.textContent=f.name;
-      folderSelect.appendChild(opt);
+    const res = await fetch(apiBase);
+    const data = await res.json();
+    const folders = data.filter(f => f.type === "dir");
+    if(!folders.length){ folderList.innerHTML = "<li class='folder-item'>Tidak ada folder</li>"; return; }
+    folderList.innerHTML = "";
+    folders.forEach((f, i) => {
+      const li = document.createElement("li");
+      li.className = "folder-item" + (i === 0 ? " active" : "");
+      li.innerHTML = `<i class="fa-solid fa-folder"></i> ${f.name}`;
+      li.onclick = () => {
+        document.querySelectorAll(".folder-item").forEach(el => el.classList.remove("active"));
+        li.classList.add("active");
+        loadFiles(f.name);
+      };
+      folderList.appendChild(li);
     });
-    if(folders.length>0) loadFiles(folders[0].name);
-  }catch(e){ folderSelect.innerHTML="<option>Error loading folders</option>"; }
-}
-
-// ================= SKELETON LOADING =================
-function showSkeleton(count=6){
-  grid.innerHTML="";
-  for(let i=0;i<count;i++){
-    const skel=document.createElement("div");
-    skel.className="skeleton";
-    grid.appendChild(skel);
+    loadFiles(folders[0].name);
+  }catch(e){
+    folderList.innerHTML = "<li class='folder-item' style='color:#e78b8b'>Gagal memuat folder</li>";
   }
 }
 
-// ================= LOAD FILES BATCH =================
-async function loadFiles(folder){
-  showSkeleton(8);
-  try{
-    const res=await fetch(rawBase+folder+"/api.json");
-    const json=await res.json();
-    grid.innerHTML="";
-    const batchSize=12;
-    for(let i=0;i<json.data.length;i+=batchSize){
-      const batch=json.data.slice(i,i+batchSize);
-      batch.forEach(link=>{
-        const ext=link.split('.').pop().toLowerCase();
-        const isImage=ext.match(/(jpg|jpeg|png|webp|gif)/);
-        const card=document.createElement("div"); card.className="card";
-
-        const media=isImage?document.createElement("img"):document.createElement("video");
-        media.src=link;
-        if(!isImage){ media.controls=true; media.preload="metadata"; const overlay=document.createElement("div"); overlay.className="play-overlay"; overlay.innerHTML='<i class="fas fa-play"></i>'; card.appendChild(overlay);}
-        
-        media.addEventListener("click",()=>{
-          if(isImage){ fsImg.src=link; fsImg.style.display="block"; fsVideo.style.display="none"; }
-          else{ fsVideo.src=link; fsVideo.style.display="block"; fsImg.style.display="none"; }
-          fullscreen.classList.add("active");
-          document.body.style.overflow="hidden";
-        });
-
-        const cardContent=document.createElement("div"); cardContent.className="card-content";
-        const btn=document.createElement("button"); btn.className="download-btn"; btn.innerHTML='<i class="fas fa-download"></i> Download';
-        btn.onclick=async(e)=>{
-          e.stopPropagation();
-          try{ const resp=await fetch(link); const blob=await resp.blob(); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=link.split("/").pop(); document.body.appendChild(a); a.click(); a.remove(); }
-          catch(err){ alert("Failed to download"); }
-        }
-        cardContent.appendChild(btn);
-        card.appendChild(media);
-        card.appendChild(cardContent);
-        grid.appendChild(card);
-      });
-      // small delay per batch
-      await new Promise(r=>setTimeout(r,50));
-    }
-  }catch(e){ grid.innerHTML="<p style='text-align:center;color:#ff6b81;'>Failed to load folder.</p>"; }
+function showSkeleton(count = 8){
+  grid.innerHTML = "";
+  for(let i = 0; i < count; i++){
+    const s = document.createElement("div");
+    s.className = "skeleton";
+    grid.appendChild(s);
+  }
 }
 
-// ================= EVENT LISTENERS =================
-folderSelect.addEventListener("change",(e)=>{loadFiles(e.target.value);});
-fullscreen.addEventListener("click",()=>{
-  fullscreen.classList.remove("active");
-  fsImg.src=""; fsVideo.src="";
-  document.body.style.overflow="";
+async function loadFiles(folder){
+  folderTitle.textContent = folder;
+  itemCount.textContent = "";
+  showSkeleton();
+  try{
+    const res = await fetch(rawBase + folder + "/api.json");
+    const json = await res.json();
+    const links = json.data || [];
+    currentLinks = links;
+    grid.innerHTML = "";
+    if(!links.length){
+      grid.innerHTML = "<p class='empty'>Folder ini kosong.</p>";
+      return;
+    }
+    itemCount.textContent = `${links.length} item`;
+    links.forEach((link, index) => {
+      const isImg = isImageFile(link);
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const thumbWrap = document.createElement("div");
+      thumbWrap.className = "thumb-wrap";
+      const media = document.createElement(isImg ? "img" : "video");
+      media.src = link;
+      media.loading = "lazy";
+      if(!isImg){ media.muted = true; media.preload = "metadata"; }
+      thumbWrap.appendChild(media);
+
+      if(!isImg){
+        const badge = document.createElement("div");
+        badge.className = "play-badge";
+        badge.innerHTML = '<i class="fa-solid fa-play"></i>';
+        thumbWrap.appendChild(badge);
+      }
+
+      const dlBtn = document.createElement("button");
+      dlBtn.className = "dl-btn";
+      dlBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+      dlBtn.onclick = async (e) => {
+        e.stopPropagation();
+        try{
+          const resp = await fetch(link);
+          const blob = await resp.blob();
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = link.split("/").pop();
+          document.body.appendChild(a); a.click(); a.remove();
+        }catch(err){ alert("Gagal mengunduh."); }
+      };
+
+      card.appendChild(thumbWrap);
+      card.appendChild(dlBtn);
+      card.onclick = () => openLightbox(index);
+      grid.appendChild(card);
+    });
+  }catch(e){
+    grid.innerHTML = "<p class='error'>Gagal memuat folder ini.</p>";
+  }
+}
+
+function openLightbox(index){
+  currentIndex = index;
+  renderLightbox();
+  lightbox.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+function renderLightbox(){
+  const link = currentLinks[currentIndex];
+  if(isImageFile(link)){
+    lbImg.src = link; lbImg.style.display = "block";
+    lbVideo.pause(); lbVideo.src = ""; lbVideo.style.display = "none";
+  }else{
+    lbVideo.src = link; lbVideo.style.display = "block";
+    lbImg.style.display = "none"; lbImg.src = "";
+  }
+}
+function closeLightbox(){
+  lightbox.classList.remove("active");
+  lbVideo.pause(); lbVideo.src = ""; lbImg.src = "";
+  document.body.style.overflow = "";
+}
+document.getElementById("lbClose").onclick = closeLightbox;
+document.getElementById("lbPrev").onclick = () => { currentIndex = (currentIndex - 1 + currentLinks.length) % currentLinks.length; renderLightbox(); };
+document.getElementById("lbNext").onclick = () => { currentIndex = (currentIndex + 1) % currentLinks.length; renderLightbox(); };
+lightbox.addEventListener("click", (e) => { if(e.target === lightbox) closeLightbox(); });
+document.addEventListener("keydown", (e) => {
+  if(!lightbox.classList.contains("active")) return;
+  if(e.key === "Escape") closeLightbox();
+  if(e.key === "ArrowLeft") document.getElementById("lbPrev").click();
+  if(e.key === "ArrowRight") document.getElementById("lbNext").click();
 });
 
 loadFolders();
